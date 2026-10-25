@@ -200,3 +200,65 @@ screen is two changes that cannot be reverted independently.
 Say what you verified, and how — "23/23 unit tests" and "confirmed playing via
 `dumpsys media_session`, position advanced 0:04 → 0:11" are useful; "should
 work" is not.
+
+## Mcpasi
+
+Added [Android CI](.github/workflows/ci.yml) for unit tests and a consistently
+signed debug build. It runs on every push, pull request (including forks),
+and manual dispatch from the repository's **Actions** tab.
+
+- Uses JDK 17, Android API 35, Build Tools 34.0.0, and the Gradle wrapper.
+  Action versions are pinned to commit hashes; Gradle setup validates the
+  wrapper and caches dependencies with the free basic cache provider.
+- Runs `bash ./gradlew clean :app:testDebugUnitTest`, then
+  `bash ./gradlew :app:assembleDebug`. A failed test prevents APK publication.
+  The clean build avoids stale incremental packaging; invoking the wrapper
+  with Bash also works without an executable bit on `gradlew`.
+- Uploads HTML and JUnit XML test reports as `pineapple-test-reports`, even
+  after a test or build failure (retained for 14 days).
+- Verifies the APK signature and its expected certificate before uploading
+  `pineapple-debug`: the APK, a SHA-256 checksum, and the signing certificate
+  report (retained for 30 days). Download these artifacts from the workflow run.
+  No emulator is needed for the current JVM unit tests; on-device playback
+  verification remains manual.
+
+### Fixed CI debug signing
+
+[`.github/ci/debug.keystore.base64`](.github/ci/debug.keystore.base64) is a
+**deliberately public, debug-only JKS keystore**, not a secret. The workflow
+decodes this same file into `$RUNNER_TEMP/pineapple-debug.keystore` and checks
+its certificate before invoking Gradle. `CI_DEBUG_KEYSTORE` explicitly selects
+that file in `app/build.gradle.kts`, including its JKS type, alias, and
+passwords. Without this variable, local debug signing remains unchanged.
+No repository secrets or keystore cache are needed, including for fork pull
+requests.
+
+- Alias: `androiddebugkey`
+- Store password and key password: `android`
+- Certificate SHA-256:
+  `3ea8ffd565ff2dea56fb3346660c735bc251b4298dbb85e27c33f74580c295a5`
+
+**Do not regenerate or replace this key:** Android requires the same signer
+to update an existing CI debug installation without uninstalling it. A local
+debug build or an existing release may use a different key and cannot
+necessarily be updated by a CI APK.
+
+**Never use this public key for production or published release builds.**
+Anyone can sign with it; it establishes update compatibility, not trusted
+authorship. Release signing must use a separate private keystore configured
+through `keystore.properties`, as described above.
+
+### CI signing correction
+
+The first workflow relied on `$HOME/.android/debug.keystore` being Gradle's
+default location, but did not explicitly select that keystore in the build.
+CI now selects the keystore by its absolute path instead, independent of
+Android home-directory settings. The original key and expected certificate
+are unchanged. APK certificate comparison normalises whitespace, separators,
+and letter case, and reports the expected and actual digest on failure; a
+different certificate still fails the build.
+
+Verified with `actionlint` and isolated APK signing tests using Android's
+`apksigner`: repeated signing with the fixed key passes, another signing key
+is rejected, and a missing certificate digest fails verification. A full
+local Gradle run could not be verified because it timed out.

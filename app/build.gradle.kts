@@ -21,6 +21,20 @@ android {
     }
 
     signingConfigs {
+        // CI must not depend on where the runner keeps Android's default key.
+        // Without this variable, local debug signing remains unchanged.
+        providers.environmentVariable("CI_DEBUG_KEYSTORE").orNull?.let { keystorePath ->
+            getByName("debug") {
+                storeFile = rootProject.file(keystorePath).also {
+                    check(it.isFile) { "CI debug keystore not found: $it" }
+                }
+                storeType = "JKS"
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+
         // Signed with a real keystore when `keystore.properties` is present,
         // and with the debug key when it is not.
         //
@@ -65,6 +79,7 @@ android {
             )
         }
         debug {
+            signingConfig = signingConfigs.getByName("debug")
             // Deliberately unminified: the point of a debug build is a stack
             // trace you can actually read when something goes wrong.
             isMinifyEnabled = false
