@@ -7,14 +7,22 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.torrenttunes.app.audio.AndroidAudioEffectFactory
+import com.torrenttunes.app.audio.AudioEffectFactory
+import com.torrenttunes.app.audio.AudioSettingsStore
+import com.torrenttunes.app.audio.ExoPlayerSession
+import com.torrenttunes.app.audio.OutputRouteMonitor
+import com.torrenttunes.app.audio.PlaybackSession
+import com.torrenttunes.app.audio.SharedPrefsAudioSettingsStore
+import com.torrenttunes.app.audio.AndroidOutputRouteMonitor
 import dagger.Module
+import kotlinx.coroutines.SupervisorJob
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 @Module
@@ -93,4 +101,24 @@ object AppModule {
     @Provides
     @Singleton
     fun providePlayerInterface(player: ExoPlayer): Player = player
+
+    // Audio enhancement engine (optional; degrades gracefully when unavailable).
+    @Provides
+    @Singleton
+    fun providePlaybackSession(player: ExoPlayer): PlaybackSession = ExoPlayerSession(player)
+
+    @Provides
+    @Singleton
+    fun provideAudioEffectFactory(@ApplicationContext context: Context): AudioEffectFactory =
+        AndroidAudioEffectFactory(context)
+
+    @Provides
+    @Singleton
+    fun provideAudioSettingsStore(@ApplicationContext context: Context): AudioSettingsStore =
+        SharedPrefsAudioSettingsStore(context)
+
+    @Provides
+    @Singleton
+    fun provideOutputRouteMonitor(@ApplicationContext context: Context): OutputRouteMonitor =
+        AndroidOutputRouteMonitor(context)
 }

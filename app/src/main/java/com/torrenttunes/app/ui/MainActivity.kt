@@ -230,6 +230,7 @@ fun PineappleScreen(vm: MainViewModel, library: LibraryViewModel) {
     // rememberSaveable: a rotation must not dump you back on Search, and must
     // not silently close the player over a track that is still playing.
     var playerOpen by rememberSaveable { mutableStateOf(false) }
+    var soundOpen by rememberSaveable { mutableStateOf(false) }
 
     // Every tab opened so far, in order.
     //
@@ -269,9 +270,11 @@ fun PineappleScreen(vm: MainViewModel, library: LibraryViewModel) {
     // Back walks: player, then an open artist page, then an open album page,
     // then the tab stack (an artist opened from an album returns to it).
     BackHandler(
-        enabled = playerOpen || artistPage != null || albumPage != null || tabHistory.size > 1,
+        enabled = soundOpen || playerOpen || artistPage != null || albumPage != null || tabHistory.size > 1,
     ) {
         when {
+            // Sound settings over the player: closes before the player.
+            soundOpen -> soundOpen = false
             // The player is mounted over everything, including a catalogue
             // page opened underneath it, so it closes first.
             playerOpen -> playerOpen = false
@@ -279,6 +282,11 @@ fun PineappleScreen(vm: MainViewModel, library: LibraryViewModel) {
             albumPage != null -> vm.closeAlbum()
             else -> tabHistory = tabHistory.dropLast(1)
         }
+    }
+
+if (soundOpen) {
+        SoundSettingsScreen(manager = vm.audioEffects, onClose = { soundOpen = false })
+        return
     }
 
     // The full-screen player is mounted *over* the scaffold rather than
@@ -290,6 +298,7 @@ fun PineappleScreen(vm: MainViewModel, library: LibraryViewModel) {
             library = library,
             currentTrack = currentTrack,
             onClose = { playerOpen = false },
+            onOpenSound = { soundOpen = true },
         )
         return
     }

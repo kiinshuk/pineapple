@@ -1,0 +1,17 @@
+Pineapple is a light, native Android music player for YouTube Music streams.
+
+Search, tap, and listen immediately — no web views, account sign-in flow in app, or extra buffering gimmicks. Results are filtered for official song/album/single/artist/EP entries and play through a single ExoPlayer instance with deep buffering.
+
+Features:
+• Search YouTube Music releases and play whole tracks instantly
+• Discovery and Library tabs with likes, playlists, recent plays
+• Full-screen player with queue, shuffle, repeat
+• Long-press a song for queue/playlist actions
+• Optional sound enhancements: dynamic EQ detected at runtime, presets, custom profiles, bass boost, loudness, spatial where supported
+• Dark Pineapple theme with orange accent and 48dp touch targets
+• Notification playback controls
+• Offline-friendly retention of likes and playlists
+
+Open source under the MIT license. Supports Android 8.0 (API 26) and later.
+
+Nothing is faked: progress, controls, queues and search reflect the actual player state.

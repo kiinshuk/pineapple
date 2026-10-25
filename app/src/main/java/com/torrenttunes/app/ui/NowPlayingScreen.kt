@@ -4,9 +4,11 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -102,6 +104,7 @@ fun NowPlayingScreen(
     library: LibraryViewModel,
     currentTrack: SearchResult?,
     onClose: () -> Unit,
+    onOpenSound: () -> Unit = {},
 ) {
     val nowPlaying by vm.nowPlaying.collectAsState()
     val artist by vm.artist.collectAsState()
@@ -172,6 +175,27 @@ fun NowPlayingScreen(
                     )
                 }
                 PineIconButton(
+                    onClick = onOpenSound,
+                    glyph = {
+                        androidx.compose.foundation.Canvas(Modifier.size(20.dp)) {
+                            val h = size.height
+                            val w = size.width
+                            val barW = w / 6f
+                            val xs = listOf(0f, barW * 1.7f, barW * 3.4f)
+                            val frac = listOf(0.45f, 0.95f, 0.65f)
+                            xs.zip(frac).forEach { (x, f) ->
+                                val hh = h * f
+                                drawRoundRect(
+                                    color = PineTextPrimary,
+                                    topLeft = androidx.compose.ui.geometry.Offset(x, (h - hh) / 2),
+                                    size = androidx.compose.ui.geometry.Size(barW, hh),
+                                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(barW / 2, barW / 2),
+                                )
+                            }
+                        }
+                    },
+                )
+                PineIconButton(
                     onClick = { showQueue = true },
                     glyph = { QueueGlyph(23.dp, PineTextPrimary) },
                 )
@@ -189,15 +213,15 @@ fun NowPlayingScreen(
             val reserved = 300.dp
             val artSize = minOf(artWidth, windowHeight - reserved).coerceAtLeast(140.dp)
     // Entrance: artwork scales in on mount (cheap, runs on UI thread only).
-    val enterScaleState = remember { androidx.compose.animation.core.Animatable(0.86f) }
-    LaunchedEffect(Unit) { enterScaleState.animateTo(1f, animationSpec = spring(dampingRatio = 0.82f, stiffness = 720f)) }
+    val enterScaleState = remember { androidx.compose.animation.core.Animatable(0.92f) }
+    LaunchedEffect(Unit) { enterScaleState.animateTo(1f, animationSpec = spring(dampingRatio = 0.75f, stiffness = 420f)) }
     val enterScale = enterScaleState.value
 
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Box(Modifier.size(artSize).scale(enterScale)) {
+                Box(Modifier.size(artSize).scale(enterScale).shadow(28.dp, RoundedCornerShape(PineRadius.Lg), ambientColor = androidx.compose.ui.graphics.Color.Black.copy(alpha = .35f))) {
                     ThumbnailFill(
                         url = artworkUrl,
                         seed = seed,

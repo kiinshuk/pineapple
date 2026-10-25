@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import com.torrenttunes.app.library.LibraryStore
+import com.torrenttunes.app.audio.AudioEffectsManager
 import com.torrenttunes.app.player.PlayerController
 import com.torrenttunes.app.search.Connectivity
 import com.torrenttunes.app.search.ConnectionNotice
@@ -81,6 +82,7 @@ data class AlbumUiState(
 class MainViewModel @Inject constructor(
     @dagger.hilt.android.qualifiers.ApplicationContext private val androidContext: android.content.Context,
     val playerController: PlayerController,
+val audioEffects: AudioEffectsManager,
     private val scope: CoroutineScope,
     private val library: LibraryStore,
     private val connectivity: Connectivity,

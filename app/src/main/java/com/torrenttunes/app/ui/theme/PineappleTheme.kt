@@ -67,7 +67,7 @@ val PineSuccess = Color(0xFF34C77B)
  * White would measure 2.36:1 here and fail outright; near-black measures
  * 8.35:1. This is why every orange control in the app uses dark type.
  */
-val PineOnAccent = Color(0xFF140A00)
+val PineOnAccent = Color(0xFFFFFFFF)
 
 /** The full-screen player's untinted fallback ground. */
 val PinePlayerTop = Color(0xFF16171B)

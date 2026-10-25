@@ -1,0 +1,28 @@
+Categories:
+  - Music & Audio
+License: MIT
+WebSite: https://kiinshuk.github.io/pineapple-site/
+SourceCode: https://github.com/kiinshuk/pineapple
+IssueTracker: https://github.com/kiinshuk/pineapple/issues
+Changelog: https://github.com/kiinshuk/pineapple/releases
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.4
+CurrentVersionCode: 5
+
+Builds:
+  - versionName: 1.4
+    versionCode: 5
+    commit: 9f2b02e
+    subdir: app
+    gradle:
+      - Debug? Production build variant should be release; use assembleRelease or specify gradle flavor
+    # scandelete test files if needed:
+    # scandelete:
+    #   - app/src/androidTest
+    #   - app/src/test
+
+AllowedAPKSigningKeys:
+  # optional for reproducible build later
+AntiFeatures:
+  - NonFreeNet (uses YouTube Music streaming)

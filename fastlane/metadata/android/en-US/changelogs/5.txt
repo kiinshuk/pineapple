@@ -1,0 +1,1 @@
+Release 1.4: notification playback provider fix, discovery carousels, catalogue UX, Coil artwork, enhanced seek bar, notification permission support, and stability improvements.

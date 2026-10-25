@@ -1,0 +1,1 @@
+Release 1.5: switched accent to blue, added sound enhancement engine with dynamic equalizer/presets/profiles, bass boost, loudness, spatial where supported, Now Playing polish, prepare F-Droid metadata.

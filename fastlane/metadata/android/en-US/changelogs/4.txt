@@ -1,0 +1,1 @@
+Release 1.3: download badge and search navigation fixes. Improved stability and search-result sorting behavior. Added contribution and licensing clarity.
